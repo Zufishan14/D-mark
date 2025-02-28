@@ -26,4 +26,24 @@
 
     </div>
 </div> 
+<div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl"></div>
+    <h2 class="mb-12 text-2xl text-center">Related Items</h2>
+
+    <div class="grid grid-cols-3 gap-3"> 
+        {% for Item in related_items %}
+        <div class="overflow-hidden">  
+            <a href="{% url 'item:detail' Item.id %}">
+                <div class="h-48">  
+                    <img src="{{ Item.image.url }}" 
+                         class="w-full h-full object-cover rounded-t-xl"> 
+                </div>
+                <div class="px-6 bg-white rounded-b-xl">
+                    <h2 class="text-2xl">{{ Item.name }}</h2>
+                    <p class="text-gray-500">Price:₹{{ Item.price }}</p>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+    </div>
+</div>
 {% endblock %}
