@@ -1,129 +1,78 @@
-{% extends 'core/base.html' %}  
+{% extends 'core/base.html' %}
 
-{% block title %}SQL Data Management{% endblock %}  
+{% block title %}SQL Data{% endblock %}
 
-{% block content %}  
-<div class="w-full my-6 mx-auto p-6 bg-gray-100 rounded-xl">  
-    <h1 class="mb-6 text-3xl">SQL Data Management</h1>  
+{% block content %}
+<div class="w-full my-6 mx-auto p-6 bg-gray-100 rounded-xl">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl">SQL Data Management</h1>
+        <a href="{% url 'core:edit_sql' %}" class="px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700">
+            Edit SQL Data
+        </a>
+    </div>
 
-    {% if messages %}  
-        {% for message in messages %}  
-            <div class="alert alert-{{ message.tags }}">  
-                {{ message }}  
-            </div>  
-        {% endfor %}  
-    {% endif %}  
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+            <div class="p-4 rounded-xl {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">  
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Excel Upload Form -->
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-2xl mb-4">Import Excel Data</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-4">
+                    {{ form.excel_file.label_tag }}
+                    {{ form.excel_file }}
+                </div>
+                <button type="submit" class="py-2 px-4 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white">
+                    Upload Excel
+                </button>
+            </form>
+            <div class="mt-4 text-sm text-gray-600">
+                <p>Excel file should have the following columns:</p>
+                <ul class="list-disc list-inside mt-2">
+                    <li>name</li>
+                    <li>marks (0-100)</li>
+                    <li>email</li>
+                </ul>
+            </div>
+        </div>
 
-        <div class="bg-white p-6 rounded-xl shadow">  
-            <h2 class="text-2xl mb-4">Import Excel Data</h2>  
-            <form method="post" enctype="multipart/form-data" action="{% url 'core:sql_data' %}">  
-                {% csrf_token %}  
-                <div class="mb-4">  
-                    {{ form.excel_file.label_tag }}  
-                    {{ form.excel_file }}  
-                </div>  
-                <button type="submit" class="py-2 px-4 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white">  
-                    Upload Excel  
-                </button>  
-            </form>  
-        </div>  
-
-        <div class="bg-white p-6 rounded-xl shadow">  
-            <h2 class="text-2xl mb-4">Upload Image</h2>  
-            <form method="post" enctype="multipart/form-data" action="{% url 'core:sql_data' %}">  
-                {% csrf_token %}  
-                <div class="mb-4">  
-                    <label class="block text-gray-700">Upload Image:</label>  
-                    <input type="file" name="image" accept="image/*" class="form-control-file">  
-                </div>  
-                <button type="submit" class="py-2 px-4 text-lg bg-blue-500 hover:bg-blue-700 rounded-xl text-white">  
-                    Upload Image  
-                </button>  
-            </form>  
-        </div>  
-
-        <div class="bg-white p-6 rounded-xl shadow">  
-            <h2 class="text-2xl mb-4">Existing Records</h2>  
-            {% if records %}  
-                <div class="overflow-x-auto">  
-                    <table class="w-full">  
-                        <thead class="bg-gray-100">  
-                            <tr>  
-                                <th class="p-2 text-left">Name</th>  
-                                <th class="p-2 text-left">Marks</th>  
+        <!-- Display Records -->
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h2 class="text-2xl mb-4">Existing Records</h2>
+            {% if records %}
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-2 text-left">Name</th>
+                                <th class="p-2 text-left">Marks</th>
                                 <th class="p-2 text-left">Email</th>
-                            </tr>  
-                        </thead>  
-                        <tbody>  
-                            {% for record in records %}  
-                                <tr class="border-b hover:bg-gray-50">  
-                                    <td class="p-2">{{ record.name }}</td>  
-                                    <td class="p-2">{{ record.marks }}</td> 
-                                    <td class="p-2">{{ record.email }}</td> 
-                                </tr>  
-                            {% endfor %}  
-                        </tbody>  
-                    </table>  
-                </div>  
-            {% else %}  
-                <p class="text-gray-500">No records found.</p>  
-            {% endif %}  
-        </div>  
-    </div>  
-
-    <!-- Display Uploaded Images -->  
-    <div class="mt-6 bg-white p-6 rounded-xl shadow">  
-        <h2 class="text-2xl mb-4">Uploaded Images</h2>  
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">  
-            {% for image in images %}  
-                <div class="text-center">  
-                    <img src="{{ image.image.url }}" alt="Uploaded Image" class="max-w-full h-48 object-cover rounded-lg mb-2">  
-                    <p class="text-sm text-gray-600">Uploaded at: {{ image.uploaded_at }}</p>  
-                </div>  
-            {% endfor %}  
-        </div>  
-    </div>  
-</div>  
-
-<style>  
-    .alert {  
-        padding: 15px;  
-        margin-bottom: 20px;  
-        border: 1px solid transparent;  
-        border-radius: 4px;  
-    }  
-    .alert-success {  
-        color: #3c763d;  
-        background-color: #dff0d8;  
-        border-color: #d6e9c6;  
-    }  
-    .alert-error {  
-        color: #a94442;  
-        background-color: #f2dede;  
-        border-color: #ebccd1;  
-    }  
-    table {  
-        width: 100%;  
-        border-collapse: collapse;  
-        margin-bottom: 20px;  
-    }  
-    th, td {  
-        padding: 12px 15px;  
-    }  
-    th {  
-        background-color: #f8f9fa;  
-        border-bottom: 2px solid #dee2e6;  
-    }  
-    tr:hover {  
-        background-color: #f8f9fa;  
-    }  
-    .form-control-file {  
-        width: 100%;  
-        padding: 0.5rem 0.75rem;  
-        border: 1px solid #ced4da;  
-        border-radius: 0.25rem;  
-    }  
-</style>  
-{% endblock %}  
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                            <tr class="border-b">
+                                <td class="p-2">{{ record.name }}</td>
+                                <td class="p-2">{{ record.marks }}</td>
+                                <td class="p-2">{{ record.email }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-gray-500">No records found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from .models import ExcelData
 
 class LoginForm(AuthenticationForm): 
     username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter Username', 'class': 'w-full py-4 px-6 rounded'}))
@@ -16,19 +17,21 @@ class SignUpForm(UserCreationForm):
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter Password', 'class': 'w-full py-4 px-6 rounded'}))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Repeat Password', 'class': 'w-full py-4 px-6 rounded'}))
 
-class ExcelUploadForm(forms.Form):  
-    excel_file = forms.FileField(  
-        label='Upload Excel File',  
-        widget=forms.FileInput(attrs={  
-            'class': 'w-full py-4 px-6 rounded',  
-            'accept': '.xlsx, .xls'  
-        })  
-    )  
+class ExcelUploadForm(forms.Form):
+    excel_file = forms.FileField(
+        widget=forms.FileInput(attrs={
+            'class': 'w-full py-4 px-6 rounded',
+            'accept': '.xlsx, .xls'
+        }),
+        label='Upload Excel File'
+    )
 
-    image = forms.ImageField(  
-        label='Upload Image',  
-        widget=forms.FileInput(attrs={  
-            'class': 'w-full py-4 px-6 rounded',  
-            'accept': 'image/*'  
-        })  
-    )  
+class ExcelDataForm(forms.ModelForm):
+    class Meta:
+        model = ExcelData
+        fields = ['name', 'marks', 'email']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'w-full py-4 px-6 rounded'}),
+            'marks': forms.NumberInput(attrs={'class': 'w-full py-4 px-6 rounded'}),
+            'email': forms.EmailInput(attrs={'class': 'w-full py-4 px-6 rounded'}),
+        }

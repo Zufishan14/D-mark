@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Edit SQL Data{% endblock %}
+
+{% block content %}
+<div class="w-full my-6 mx-auto p-6 bg-gray-100 rounded-xl">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl">Edit SQL Data</h1>
+        <a href="{% url 'core:add_record' %}" class="px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700">
+            Add New Record
+        </a>
+    </div>
+
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+            <div class="p-4 rounded-xl {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if records %}
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="w-full">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marks</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for record in records %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ record.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ record.marks }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ record.email }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex space-x-2">
+                            <a href="{% url 'core:edit_record' record.pk %}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                            <a href="{% url 'core:delete_record' record.pk %}" class="text-red-600 hover:text-red-900">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <p class="text-gray-500 text-lg">No records found. Add your first record!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
