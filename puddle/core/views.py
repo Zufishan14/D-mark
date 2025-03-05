@@ -4,7 +4,7 @@ from django.contrib import messages
 import pandas as pd  
 from .forms import SignUpForm, ExcelUploadForm  
 from item.models import Person  
-from .models import UploadedImage  # Assuming you have an Image model  
+from .models import UploadedImage  
 
 # Create your views here.  
 def index(request):  
@@ -52,32 +52,38 @@ def sql_data(request):
                     # Check if required columns exist (case-insensitive)  
                     name_col = None  
                     marks_col = None  
+                    email_col = None  
                     
                     for col in columns:  
                         if col.lower() == 'name':  
                             name_col = col  
                         elif col.lower() == 'marks':  
                             marks_col = col  
+                        elif col.lower() == 'email':  
+                            email_col = col  
                     
-                    if not name_col or not marks_col:  
+                    if not name_col or not marks_col or not email_col:  
                         missing_cols = []  
                         if not name_col:  
                             missing_cols.append("'name'")  
                         if not marks_col:  
                             missing_cols.append("'marks'")  
+                        if not email_col:  
+                            missing_cols.append("'email'")  
                         error_msg = f"Excel file must contain columns: {' and '.join(missing_cols)}. Found columns: {', '.join(columns)}"  
                         messages.error(request, error_msg)  
                         return redirect('core:sql_data')  
                     
-                    # Process each row and save to database  
+                    # Process each row and save to database with email  
                     for index, row in df.iterrows():  
                         Person.objects.create(  
                             name=str(row[name_col]),  
-                            marks=str(row[marks_col])  
+                            marks=str(row[marks_col]),  
+                            email=str(row[email_col])  # Added email field  
                         )  
                     messages.success(request, f'Successfully imported {len(df)} records from Excel!')  
                 except Exception as e:  
-                    messages.error(request, f'Error importing Excel data: {str(e)}. Please ensure your Excel file has "name" and "marks" columns.')  
+                    messages.error(request, f'Error importing Excel data: {str(e)}. Please ensure your Excel file has "name", "marks", and "email" columns.')  
             
 
             if 'image' in request.FILES:  
@@ -99,5 +105,5 @@ def sql_data(request):
     return render(request, 'core/sql_data.html', {  
         'form': form,  
         'records': records,  
-        'images': images  
+        'images': images,  
     })  

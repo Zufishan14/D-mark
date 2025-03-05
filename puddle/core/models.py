@@ -1,6 +1,6 @@
 from django.db import models
 class UploadedImage(models.Model):  
-    image = models.ImageField(upload_to='uploaded_images/')  
+    image = models.ImageField(upload_to='item_images')  
     uploaded_at = models.DateTimeField(auto_now_add=True)  
 
     def __str__(self):  
