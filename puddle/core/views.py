@@ -3,9 +3,10 @@ from item.models import Category, Item
 from django.contrib import messages  
 import pandas as pd  
 from .forms import SignUpForm, ExcelUploadForm, ExcelDataForm  
-from item.models import Person  
-from .models import UploadedImage, ExcelData  
+from .models import ExcelData  
 from django.contrib.auth.decorators import login_required  
+from django.contrib.auth import logout 
+from django.contrib import messages 
 
 # Create your views here.  
 def index(request):  
@@ -33,6 +34,10 @@ def signup(request):
         'form': form,  
     })  
 
+def logoutUser(request):
+    logout(request)
+    messages.success(request, ('You have been logged out'))
+    return redirect('core:login')
 @login_required
 def sql_data(request):  
     if request.method == 'POST':  
